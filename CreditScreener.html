@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>APCP Credit Screener</title>
+<meta name="robots" content="noindex, nofollow" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap');
+
+  :root{
+    --ink:#0f2e27; --ink-soft:#3c5a52; --paper:#f5f2ea;
+    --brass:#b9892f; --line:#d8d0bf; --pass:#2f7d54; --caution:#bb7d18; --fail:#a23a2e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    padding:28px 26px 36px; min-height:100vh;
+  }
+  .wrap{max-width:920px;margin:0 auto;}
+  .head{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:22px;
+    display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  .title{font-family:'Fraunces',serif;font-size:27px;font-weight:600;letter-spacing:-0.01em;}
+  .sub{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .vlabel{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;}
+  #verdictTop{font-family:'Spline Sans Mono',monospace;font-size:16px;font-weight:500;margin-top:2px;}
+  .grid{display:grid;grid-template-columns:minmax(280px,1fr) minmax(300px,1.25fr);gap:26px;}
+  @media (max-width:720px){.grid{grid-template-columns:1fr;}}
+  .sect{font-family:'Fraunces',serif;font-size:15px;font-weight:600;margin-bottom:12px;}
+  label.f{display:block;margin-bottom:16px;}
+  label.f .lab{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:5px;font-weight:600;}
+  .inbox{display:flex;align-items:center;background:#fffdf8;border:1px solid var(--line);
+    border-radius:7px;overflow:hidden;}
+  .inbox span.fix{padding:0 10px;color:var(--ink-soft);font-family:'Spline Sans Mono',monospace;}
+  .inbox input{flex:1;border:none;outline:none;background:transparent;padding:11px 12px;
+    font-size:16px;color:var(--ink);font-family:'Spline Sans Mono',monospace;width:100%;}
+  .hint{font-size:11px;color:var(--ink-soft);opacity:.85;margin-top:4px;display:block;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+  .metric{padding:12px 14px;background:#fffdf8;border:1px solid var(--line);border-radius:8px;}
+  .metric .ml{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;}
+  .metric .mv{font-size:22px;margin-top:3px;font-family:'Spline Sans Mono',monospace;font-weight:500;}
+  .stack{display:flex;height:46px;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:#fffdf8;}
+  .band{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;
+    white-space:nowrap;overflow:hidden;}
+  .attach{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft);
+    margin-top:6px;font-family:'Spline Sans Mono',monospace;}
+  .vpanel{margin-top:20px;border-radius:10px;padding:14px 16px;background:#fffdf8;}
+  .vtitle{font-family:'Fraunces',serif;font-size:18px;font-weight:600;}
+  .chk{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:6px;color:var(--ink-soft);}
+  .chk b{font-weight:700;}
+  .foot{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);
+    font-size:11px;color:var(--ink-soft);line-height:1.6;}
+  .note{font-size:11.5px;color:var(--ink-soft);line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="title">Credit Screener</div>
+      <div class="sub">AP Credit Partners &middot; last-dollar debt yield &amp; capital-stack screen</div>
+    </div>
+    <div style="text-align:right">
+      <span class="vlabel">Verdict</span>
+      <div id="verdictTop">&bull; &mdash;</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <div>
+      <div class="sect">Deal Inputs</div>
+      <label class="f"><span class="lab">Deal Name</span>
+        <span class="inbox"><input id="name" value="Sample Multifamily Deal"></span></label>
+      <div class="two">
+        <label class="f"><span class="lab">Units</span>
+          <span class="inbox"><input id="units" value="250" inputmode="decimal"></span></label>
+        <label class="f"><span class="lab">UW NOI</span>
+          <span class="inbox"><span class="fix">$</span><input id="noi" value="3,500,000" inputmode="decimal"></span></label>
+      </div>
+      <label class="f"><span class="lab">UW Value</span>
+        <span class="inbox"><span class="fix">$</span><input id="value" value="55,000,000" inputmode="decimal"></span>
+        <span class="hint" id="valueHint"></span></label>
+      <label class="f"><span class="lab">Senior Loan</span>
+        <span class="inbox"><span class="fix">$</span><input id="senior" value="36,000,000" inputmode="decimal"></span>
+        <span class="hint" id="seniorHint"></span></label>
+      <label class="f"><span class="lab">Check Size (our position)</span>
+        <span class="inbox"><span class="fix">$</span><input id="check" value="7,000,000" inputmode="decimal"></span>
+        <span class="hint" id="checkHint"></span></label>
+
+      <div class="sect" style="margin-top:22px">Credit Box</div>
+      <div class="two">
+        <label class="f"><span class="lab">Min Debt Yield</span>
+          <span class="inbox"><input id="minDY" value="6.50" inputmode="decimal"><span class="fix">%</span></span></label>
+        <label class="f"><span class="lab">Max Stacked LTV</span>
+          <span class="inbox"><input id="maxLTV" value="85" inputmode="decimal"><span class="fix">%</span></span></label>
+      </div>
+      <div class="note">Thresholds are editable &mdash; set them to your committee's standing box and the verdict updates live.</div>
+    </div>
+
+    <!-- RESULTS -->
+    <div>
+      <div class="sect">Position Metrics</div>
+      <div class="metrics">
+        <div class="metric"><div class="ml">Total Debt</div><div class="mv" id="mTotal">&mdash;</div></div>
+        <div class="metric"><div class="ml">Equity Cushion</div><div class="mv" id="mCushion">&mdash;</div></div>
+        <div class="metric"><div class="ml">Debt Yield (last $)</div><div class="mv" id="mDY">&mdash;</div></div>
+        <div class="metric"><div class="ml">Proposed LTV</div><div class="mv" id="mLTV">&mdash;</div></div>
+      </div>
+
+      <div class="sect">Capital Stack (% of UW value)</div>
+      <div class="stack" id="stack"></div>
+      <div class="attach"><span id="attach">Attach &mdash;</span><span id="detach">Detach &mdash;</span></div>
+      <div id="overlev" style="font-size:12px;color:var(--fail);margin-top:6px;font-weight:500;display:none">
+        &#9888; Stacked debt exceeds UW value &mdash; no equity cushion below our position.</div>
+
+      <div class="vpanel" id="vpanel">
+        <div class="vtitle" id="vtitle">&mdash;</div>
+        <div style="margin-top:8px">
+          <div class="chk" id="chkDY"></div>
+          <div class="chk" id="chkLTV"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    Methodology mirrors the deal tracker: Debt Yield = UW NOI &divide; (Senior + Check); Proposed LTV = (Senior + Check) &divide; UW Value.
+    Screening output only &mdash; not an investment recommendation or committee approval.
+  </div>
+</div>
+
+<script>
+  var INK="#0f2e27", BRASS="#b9892f", PASS="#2f7d54", CAUTION="#bb7d18", FAIL="#a23a2e";
+  function parseNum(s){var v=parseFloat(String(s).replace(/[^0-9.\-]/g,""));return isFinite(v)?v:0;}
+  function fmtMoney(n){return isFinite(n)?"$"+Math.round(n).toLocaleString("en-US"):"\u2014";}
+  function fmtPct(n,d){if(d===undefined)d=2;return isFinite(n)?(n*100).toFixed(d)+"%":"\u2014";}
+  function $(id){return document.getElementById(id);}
+
+  var ids=["name","units","noi","value","senior","check","minDY","maxLTV"];
+  ids.forEach(function(id){$(id).addEventListener("input",compute);});
+
+  function band(wPct,bg,label,fg){
+    if(wPct<=0)return "";
+    var show=wPct>0.12?label:"";
+    return '<div class="band" style="width:'+Math.min(100,wPct*100)+'%;background:'+bg+';color:'+fg+'" title="'+label+' '+(wPct*100).toFixed(1)+'%">'+show+'</div>';
+  }
+
+  function compute(){
+    var u=parseNum($("units").value), NOI=parseNum($("noi").value), V=parseNum($("value").value),
+        S=parseNum($("senior").value), C=parseNum($("check").value);
+    var totalDebt=S+C;
+    var stackedLTV=V?totalDebt/V:NaN, debtYield=totalDebt?NOI/totalDebt:NaN,
+        seniorLTV=V?S/V:NaN, seniorDY=S?NOI/S:NaN, capRate=V?NOI/V:NaN,
+        valuePerUnit=u?V/u:NaN, checkPerUnit=u?C/u:NaN,
+        equityCushion=V?Math.max(0,(V-totalDebt)/V):NaN;
+
+    $("valueHint").textContent="Implied cap rate: "+fmtPct(capRate)+"  \u00b7  "+fmtMoney(valuePerUnit)+"/unit";
+    $("seniorHint").textContent="Senior LTV "+fmtPct(seniorLTV,1)+" \u00b7 senior DY "+fmtPct(seniorDY);
+    $("checkHint").textContent=fmtMoney(checkPerUnit)+"/unit";
+
+    $("mTotal").textContent=fmtMoney(totalDebt);
+    $("mCushion").textContent=fmtPct(equityCushion);
+
+    var minDY=parseNum($("minDY").value)/100, maxLTV=parseNum($("maxLTV").value)/100;
+    var dyOk=debtYield>=minDY, ltvOk=stackedLTV<=maxLTV;
+
+    $("mDY").textContent=fmtPct(debtYield); $("mDY").style.color=dyOk?PASS:FAIL;
+    $("mLTV").textContent=fmtPct(stackedLTV,1); $("mLTV").style.color=ltvOk?PASS:FAIL;
+
+    var seniorPct=isFinite(seniorLTV)?Math.max(0,seniorLTV):0;
+    var checkPct=isFinite(stackedLTV)?Math.max(0,stackedLTV-seniorLTV):0;
+    var equityPct=Math.max(0,1-seniorPct-checkPct);
+    var overlev=stackedLTV>1;
+    var html=band(seniorPct,INK,"Senior","#fff")+band(checkPct,BRASS,"Our Check","#fff");
+    if(!overlev)html+=band(equityPct,"#e8e0cf","Equity",INK);
+    $("stack").innerHTML=html;
+    $("attach").textContent="Attach "+fmtPct(seniorLTV,0);
+    $("detach").textContent="Detach "+fmtPct(stackedLTV,0);
+    $("overlev").style.display=overlev?"block":"none";
+
+    var fails=(dyOk?0:1)+(ltvOk?0:1);
+    var vtxt=fails===0?"WITHIN BOX":fails===1?"REVIEW \u2014 1 BREACH":"OUTSIDE BOX";
+    var vc=fails===0?PASS:fails===1?CAUTION:FAIL;
+    $("verdictTop").textContent="\u25cf "+vtxt; $("verdictTop").style.color=vc;
+    $("vtitle").textContent=vtxt; $("vtitle").style.color=vc;
+    $("vpanel").style.border="1.5px solid "+vc;
+
+    $("chkDY").innerHTML='<b style="color:'+(dyOk?PASS:FAIL)+'">'+(dyOk?"\u2713":"\u2715")+'</b> Debt yield '+fmtPct(debtYield)+' vs. min '+parseNum($("minDY").value).toFixed(2)+'%';
+    $("chkLTV").innerHTML='<b style="color:'+(ltvOk?PASS:FAIL)+'">'+(ltvOk?"\u2713":"\u2715")+'</b> Stacked LTV '+fmtPct(stackedLTV,1)+' vs. max '+parseNum($("maxLTV").value)+'%';
+  }
+  compute();
+</script>
+</body>
+</html>
